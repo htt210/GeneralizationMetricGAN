@@ -1,1 +1,4 @@
-# A MDL based Generalization Metric for GANs
+# An MDL based Generalization Metric for GANs
+
+
+

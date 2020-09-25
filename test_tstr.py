@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from metrics import TSTR, MNISTMNLPClassifier, MNISTCNNClassifier
+from metrics import TSTR, MNISTMNLPClassifier, MNISTCNNClassifier, VGG
 import torchvision.datasets as dsets
 from torchvision.transforms import transforms
 import torch.optim as optim
@@ -13,15 +13,18 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-arch', type=str, default='mlp', help='classifier architecture')
     parser.add_argument('-data', type=str, default='mnist', help='dataset to use')
+    parser.add_argument('-epochs', type=int, default=50, help='number of epochs')
+    parser.add_argument('-lr', type=float, default=0.005, help='learning rate')
+    parser.add_argument('-device', type=str, default='cuda:0', help='device to run on')
 
     args = parser.parse_args()
 
     n_exps = 10
     size = 28 if args.data == 'mnist' else 32
-    lr = 0.005
+    lr = args.lr
     batch_size = 128
-    device = 'cuda'
-    n_epoch = 100
+    device = args.device
+    n_epoch = args.epochs
 
     transformMnist = transforms.Compose([
         transforms.Resize(size),
@@ -69,7 +72,10 @@ if __name__ == '__main__':
                 classifier = MNISTMNLPClassifier()
             else:
                 print('using CNN')
-                classifier = MNISTCNNClassifier()
+                if args.data == 'mnist':
+                    classifier = MNISTCNNClassifier()
+                else:
+                    classifier = VGG('VGG16', img_size=size)
             optimizer = optim.Adam(lr=lr, betas=(0.9, 0.999), params=classifier.parameters())
 
             train_data = TensorDataset(train_x[:train_size], train_y[:train_size])
