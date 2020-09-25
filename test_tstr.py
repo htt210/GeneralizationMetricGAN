@@ -74,8 +74,10 @@ if __name__ == '__main__':
             else:
                 print('using CNN')
                 if args.data == 'mnist':
+                    print('CNN')
                     classifier = MNISTCNNClassifier()
                 else:
+                    print('VGG')
                     classifier = VGG('VGG16', img_size=size)
             optimizer = optim.Adam(lr=lr, betas=(0.9, 0.999), params=classifier.parameters())
 
