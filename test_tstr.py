@@ -54,7 +54,8 @@ if __name__ == '__main__':
     for (x, y) in train_data:
         train_x.append(x)
         train_y.append(y)
-    train_x = torch.cat(train_x, dim=0)
+    print(len(train_x))
+    train_x = torch.stack(train_x, dim=0)
     train_y = torch.LongTensor(train_y)
     print(train_x.size())
     print(train_y.size())
