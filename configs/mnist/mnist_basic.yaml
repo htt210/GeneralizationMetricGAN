@@ -1,0 +1,54 @@
+data:
+  name: mnist
+  root_train: ~/github/data/mnist
+  root_test: ~/github/data/mnist
+  img_size: 28
+  n_labels: 10
+  use_label: true
+  embed_dim: 32
+generator:
+  name: mlp
+  kwargs:
+discriminator:
+  name: mlp
+  kwargs:
+z_dist:
+  type: gauss
+  dim: 128
+training:
+  out_dir: ~/github/exps/mdl/mnist
+  loss: standard
+  reg_type: real
+  reg_param: 100.
+  batch_size: 128
+  nworkers: 16
+  lr_g: 0.0001
+  lr_d: 0.0001
+  lr_anneal: 1.
+  lr_anneal_every: 100000
+  d_steps: 1
+fid:
+  enable: true
+  batch_size: 100
+  sample_size: 10000
+  model: ~/github/data/mnist/mnist_classifier.pt
+iscore:
+  enable: true
+  batch_size: 100
+  sample_size: 10000
+  model: ~/github/data/mnist/mnist_classifier.pt
+knn:
+  enable: true
+  k: 3
+  sample_size: 10000
+kmeans:
+  enable: true
+  k: 20
+  sample_size: 10000
+nnd:
+  enable: true
+  sample_size: 10000
+  loss: wgangp
+  n_epochs: 100
+  model: cnn
+
