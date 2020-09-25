@@ -45,5 +45,5 @@ class TSTR(object):
             acc_av = acc_av * (1. - 1. / bidx1) + acc_i / bidx1
             loss_av = loss_av * (1. - 1. / bidx1) + loss_i / bidx1
 
-        return acc_av, loss_av
+        return acc_av.item(), loss_av.item()
 
