@@ -34,16 +34,17 @@ class TSTR(object):
         self.classifier.eval()
         acc_av = 0.
         loss_av = 0.
-        for bidx, (x, y) in enumerate(tqdm(self.test_data)):
-            bidx1 = bidx + 1
-            x = x.to(self.device)
-            y = y.to(self.device)
+        with torch.no_grad():
+            for bidx, (x, y) in enumerate(tqdm(self.test_data)):
+                bidx1 = bidx + 1
+                x = x.to(self.device)
+                y = y.to(self.device)
 
-            y_hat = self.classifier(x)
-            loss_i = self.loss(y_hat, y)
-            acc_i = (y_hat.argmax(dim=1) == y.squeeze()).float().mean()
-            acc_av = acc_av * (1. - 1. / bidx1) + acc_i / bidx1
-            loss_av = loss_av * (1. - 1. / bidx1) + loss_i / bidx1
+                y_hat = self.classifier(x)
+                loss_i = self.loss(y_hat, y)
+                acc_i = (y_hat.argmax(dim=1) == y.squeeze()).float().mean()
+                acc_av = acc_av * (1. - 1. / bidx1) + acc_i / bidx1
+                loss_av = loss_av * (1. - 1. / bidx1) + loss_i / bidx1
 
-        return acc_av.item(), loss_av.item()
+            return acc_av.item(), loss_av.item()
 
