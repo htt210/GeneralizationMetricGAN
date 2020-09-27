@@ -63,7 +63,7 @@ class InceptionV3(nn.Module):
             weights and a slightly different structure from torchvision's
             Inception model. If you want to compute FID scores, you are
             strongly advised to set this parameter to true to get comparable
-            results.
+            results_.
         """
         super(InceptionV3, self).__init__()
 

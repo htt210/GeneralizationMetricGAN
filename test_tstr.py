@@ -101,7 +101,7 @@ if __name__ == '__main__':
     loss_mean = loss_list.mean(dim=1)
     loss_std = loss_list.std(dim=1)
 
-    with open('results/tstr_train_sizes.txt', 'w') as f:
+    with open('results_/tstr_train_sizes_%d_%s_%s.txt' % (n_epoch, args.arch, args.data), 'w') as f:
         f.write('Train sizes\n')
         f.write(str(train_sizes))
         f.write('\nAcc_list\n')
@@ -111,7 +111,7 @@ if __name__ == '__main__':
 
     fig, ax = plt.subplots(1, 1)
     ax.errorbar(x=train_sizes, y=acc_mean, yerr=acc_std)
-    fig.savefig('results/TSTR accuracy_%d_%s_%s.pdf' % (n_epoch, args.arch, args.data), bbox_inches='tight')
+    fig.savefig('results_/TSTR accuracy_%d_%s_%s.pdf' % (n_epoch, args.arch, args.data), bbox_inches='tight')
     fig, ax = plt.subplots(1, 1)
     ax.errorbar(x=train_sizes, y=loss_mean, yerr=loss_std)
-    fig.savefig('results/TSTR loss_%d_%s_%s.pdf' % (n_epoch, args.arch, args.data), bbox_inches='tight')
+    fig.savefig('results_/TSTR loss_%d_%s_%s.pdf' % (n_epoch, args.arch, args.data), bbox_inches='tight')
