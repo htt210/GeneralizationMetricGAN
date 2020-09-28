@@ -49,6 +49,12 @@ nnd:
   enable: true
   sample_size: 10000
   loss: wgangp
-  n_epochs: 100
+  lr: 0.0005
+  beta1: 0.5
+  beta2: 0.999
+  gp_weight: 10.
+  noise_weight: 0.
+  noise_dist: uniform
+  epoch: 100
   model: cnn
 

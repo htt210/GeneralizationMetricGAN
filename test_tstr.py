@@ -16,8 +16,17 @@ if __name__ == '__main__':
     parser.add_argument('-epochs', type=int, default=50, help='number of epochs')
     parser.add_argument('-lr', type=float, default=0.005, help='learning rate')
     parser.add_argument('-device', type=str, default='cuda:0', help='device to run on')
+    parser.add_argument('-noise', action='store_true', default=False, help='use noise')
 
     args = parser.parse_args()
+    config_str = ''
+    for k, v in args.__dict__.items():
+        if k != 'device':
+            config_str += '_' + k + '_' + str(v)
+
+    print(config_str)
+    if not torch.cuda.is_available():
+        exit()
 
     n_exps = 10
     size = 28 if args.data == 'mnist' else 32
@@ -101,7 +110,7 @@ if __name__ == '__main__':
     loss_mean = loss_list.mean(dim=1)
     loss_std = loss_list.std(dim=1)
 
-    with open('results_/tstr_train_sizes_%d_%s_%s.txt' % (n_epoch, args.arch, args.data), 'w') as f:
+    with open('results_/tstr_train_sizes%s.txt' % config_str, 'w') as f:
         f.write('Train sizes\n')
         f.write(str(train_sizes))
         f.write('\nAcc_list\n')
@@ -111,7 +120,9 @@ if __name__ == '__main__':
 
     fig, ax = plt.subplots(1, 1)
     ax.errorbar(x=train_sizes, y=acc_mean, yerr=acc_std)
-    fig.savefig('results_/TSTR accuracy_%d_%s_%s.pdf' % (n_epoch, args.arch, args.data), bbox_inches='tight')
+    fig.savefig('results_/TSTR accuracy%s.pdf' % config_str,
+                bbox_inches='tight')
     fig, ax = plt.subplots(1, 1)
     ax.errorbar(x=train_sizes, y=loss_mean, yerr=loss_std)
-    fig.savefig('results_/TSTR loss_%d_%s_%s.pdf' % (n_epoch, args.arch, args.data), bbox_inches='tight')
+    fig.savefig('results_/TSTR loss%s.pdf' % config_str,
+                bbox_inches='tight')

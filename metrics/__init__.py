@@ -6,5 +6,5 @@ from .inception_score import inception_score
 from .kmeans import compute_prd, compute_prd_from_embedding, prd_to_max_f_beta_pair, pr_curve_plot
 from .knn import batch_pairwise_distances, ManifoldEstimator, knn_precision_recall_features
 from .mdl import complexity_measure, max_jacobian_norm_batch, class_pair_distance
-from .nnd import nnd
+from .nnd import nnd, nnd_iter
 from .tstr import TSTR
