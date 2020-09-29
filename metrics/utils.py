@@ -74,6 +74,5 @@ def extract_features(images, C, layer, batch_size, device):
         for bidx, batch in enumerate(images):
             features = C.get_features(batch, layer_name=layer)
 
-
 # ----------------------------------------------------------------------------------------------------------------------
 

@@ -1,6 +1,7 @@
 import torch
+from torch.utils.tensorboard import SummaryWriter
 import torch.optim as optim
-import tqdm
+from tqdm import tqdm
 from .utils import *
 from gans import compute_loss, cal_grad_pen
 
@@ -93,16 +94,30 @@ def nnd_iter(C, gan_loss, real_data, fake_data, lr, betas, noise_weight, noise_d
     if gan_loss != 'wgan':
         raise NotImplementedError('Only wgan-1gp loss is supported. Expected `wgan`, found `' + gan_loss + '`')
 
+    writer = SummaryWriter()
+
     for p in C.parameters():
         p.requires_grad_()
     C.train()
     C.to(device)
 
+    real_iter = iter(real_data)
+    fake_iter = iter(fake_data)
+
     optimizer = optim.Adam(C.parameters(), lr=lr, betas=betas)
     for iidx in tqdm(range(n_iter)):
         # for idx, (real, fake) in enumerate(zip(real_data, fake_data)):
-        real = next(real_data)
-        fake = next(fake_data)
+        try:
+            real = next(real_iter)
+        except:
+            real_iter = iter(real_data)
+            real = next(real_iter)
+        try:
+            fake = next(fake_iter)
+        except:
+            fake_iter = iter(fake_data)
+            fake = next(fake_iter)
+            
         optimizer.zero_grad()
         if isinstance(real, list):
             real = real[0]
@@ -118,22 +133,28 @@ def nnd_iter(C, gan_loss, real_data, fake_data, lr, betas, noise_weight, noise_d
         fake += noise
 
         pred_real = C(real)
-        loss_real = compute_loss(gan_loss, pred_real, 1)
+        loss_real = compute_loss(gan_loss, pred_real, 1.)
         pred_fake = C(fake)
-        loss_fake = compute_loss(gan_loss, pred_fake, 0)
+        loss_fake = compute_loss(gan_loss, pred_fake, 0.)
         grad_pen = cal_grad_pen(C, real_batch=real,
                                 fake_batch=fake,
                                 gp_weight=gp_weight,
                                 gp_center=1.,
-                                gp_inter=-1.)
+                                gp_inter=-1)
         loss_reg = -(loss_real + loss_fake) + grad_pen
         loss_reg.backward()
         optimizer.step()
+
+        writer.add_scalar('loss_fake', loss_fake, iidx)
+        writer.add_scalar('loss_real', loss_real, iidx)
+        writer.add_scalar('loss_reg', loss_reg, iidx)
         # print(loss_real.item(), loss_fake.item(), grad_pen.item(), loss_reg.item())
 
     with torch.no_grad():
         loss_real = torch.tensor(0.)
         for ridx, real in enumerate(real_data):
+            if isinstance(real, list):
+                real = real[0]
             real = real.to(device)
             pred_real = C(real)
             loss_real += compute_loss(gan_loss, pred_real, 1)
@@ -141,6 +162,8 @@ def nnd_iter(C, gan_loss, real_data, fake_data, lr, betas, noise_weight, noise_d
 
         loss_fake = torch.tensor(0.)
         for fidx, fake in enumerate(fake_data):
+            if isinstance(fake, list):
+                fake = fake[0]
             fake = fake.to(device)
             pred_fake = C(fake)
             loss_fake += compute_loss(gan_loss, pred_fake, 0)

@@ -18,10 +18,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # parser.add_argument('-base_config', type=str,
     # default='configs/mnist/mnist_basic.yaml', help='path to base config')
+    parser.add_argument('-n_exp', type=int, default=10, help='number of runs per config')
     parser.add_argument('-model', type=str, default='mlp', help='classifier architecture: mlp | cnn')
     parser.add_argument('-data', type=str, default='mnist', help='dataset to use: cifar10 | mnist')
+    parser.add_argument('-n_iter', type=int, default=20000, help='number of training iterations')
     parser.add_argument('-epoch', type=int, default=100, help='number of epochs')
-    parser.add_argument('-lr', type=float, default=0.005, help='learning rate')
+    parser.add_argument('-lr', type=float, default=1e-4, help='learning rate')
     # parser.add_argument('-beta1', type=float, default=0.5)
     # parser.add_argument('-beta2', type=float, default=0.999)
     parser.add_argument('-noise_weight', type=float, default=0., help='noise weight')
@@ -50,13 +52,13 @@ if __name__ == '__main__':
     if not torch.cuda.is_available():
         exit()
 
-    n_exps = 10
+    n_exps = args.n_exp
     size = 28 if args.data == 'mnist' else 32
     nc = 1 if args.data == 'mnist' else 3
     lr = args.lr
     batch_size = 128
     device = args.device
-    n_epoch = args.epochs
+    # n_epoch = args.epochs
 
     transformMnist = transforms.Compose([
         transforms.Resize(size),
@@ -82,20 +84,25 @@ if __name__ == '__main__':
         test_data = dsets.CIFAR10(root='~/github/data/cifar10/', train=False, transform=transform, download=True)
 
     train_x = []
-    train_y = []
+    # train_y = []
+    test_x = []
     for (x, y) in train_data:
         train_x.append(x)
-        train_y.append(y)
+        # train_y.append(y)
+    for (x, y) in test_data:
+        test_x.append(x)
 
     train_x = torch.stack(train_x, dim=0)
-    train_y = torch.LongTensor(train_y)
-    print(train_x.size())
-    print(train_y.size())
+    # train_y = torch.LongTensor(train_y)
+    test_x = torch.stack(test_x, dim=0)
+    print(train_x.size(), test_x.size())
+    # print(train_y.size())
 
-    noise_weights = [args.noise_weight]  # [0., 0.1, 0.5, 1]
+    noise_weights = [0., 0.1, 0.5, 1]
 
     train_sizes = [1000, 2500, 5000, 7500, 10000, 30000, 60000]
-    test_data = DataLoader(dataset=test_data, batch_size=100, shuffle=True,
+    test_data = TensorDataset(test_x)
+    test_data = DataLoader(dataset=test_data, batch_size=128, shuffle=True,
                            drop_last=True, num_workers=16, pin_memory=True)
 
     nnds = [[[] for j in range(len(train_sizes))] for i in range(len(noise_weights))]
@@ -112,25 +119,29 @@ if __name__ == '__main__':
 
         for i, noise_weight in enumerate(noise_weights):
             for j, train_size in enumerate(train_sizes):
+                print('i, j', i, j, 'noise_weight', noise_weights[i], 'train_size', train_sizes[j])
+                rf.write('noise_weight ' + str(noise_weight) + ' train_size ' + str(train_size) + '\n')
                 for eidx in range(n_exps):
-                    if args.arch == 'mlp':
+                    if args.model == 'mlp':
                         net = models.MLPDiscriminator(nx=size * size, n_hidden=512,
                                                       n_hiddenlayer=3, use_label=False)
                     else:
                         net = models.DCDiscriminator(img_size=size, nc=nc, ndf=128)
 
-                    train_data = TensorDataset(train_x[:train_size], train_y[:train_size])
+                    train_data = TensorDataset(train_x[:train_size])
                     train_data = DataLoader(dataset=train_data, batch_size=128, shuffle=True,
-                                            drop_last=True, num_workers=16, pin_memory=True)
+                                            drop_last=True, num_workers=0, pin_memory=True)
 
-                    nndij = nnd_iter(C=net, gan_loss='wgangp', real_data=test_data.__iter__(),
-                                     fake_data=train_data.__iter__(), lr=args.lr, betas=(0.5, 0.999),
-                                     noise_weight=noise_weight, noise_dist=args.noise_dist,
+                    nndij = nnd_iter(C=net, gan_loss='wgan', real_data=test_data,
+                                     fake_data=train_data, lr=args.lr, betas=(0.9, 0.999),
+                                     noise_weight=noise_weight, noise_dist=args.noise_dist, gp_weight=args.gp_weight,
                                      n_iter=args.n_iter, device=args.device)
                     nnds[i][j].append(nndij)
 
+                    print(nndij)
                     rf.write(str(nndij) + ' ')
                     rf.flush()
                 rf.write('\n')
+                print()
                 rf.flush()  # end of a experiment
             rf.write('\n')  # end of a noise_weight
