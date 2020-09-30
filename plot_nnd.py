@@ -48,7 +48,7 @@ if __name__ == '__main__':
             nndi_mean = nndi.mean(dim=1)
             nndi_std = nndi.std(dim=1)
             (_, caps, _) = ax.errorbar(x=train_sizes, y=nndi_mean, yerr=nndi_std,
-                                       marker='.', label='$\lambda = $' + str(nw),
+                                       marker='.', label='$\epsilon = $' + str(nw),
                                        capsize=4, linestyle=line_styles[nidx])
             for cap in caps:
                 cap.set_markeredgewidth(1)
