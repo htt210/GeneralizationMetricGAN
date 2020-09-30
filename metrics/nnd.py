@@ -94,7 +94,7 @@ def nnd_iter(C, gan_loss, real_data, fake_data, lr, betas, noise_weight, noise_d
     if gan_loss != 'wgan':
         raise NotImplementedError('Only wgan-1gp loss is supported. Expected `wgan`, found `' + gan_loss + '`')
 
-    writer = SummaryWriter()
+    writer = SummaryWriter(log_dir='~/github/runs/')
 
     for p in C.parameters():
         p.requires_grad_()

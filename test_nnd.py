@@ -16,31 +16,19 @@ from time import time
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    # parser.add_argument('-base_config', type=str,
-    # default='configs/mnist/mnist_basic.yaml', help='path to base config')
     parser.add_argument('-n_exp', type=int, default=10, help='number of runs per config')
     parser.add_argument('-model', type=str, default='mlp', help='classifier architecture: mlp | cnn')
     parser.add_argument('-data', type=str, default='mnist', help='dataset to use: cifar10 | mnist')
     parser.add_argument('-n_iter', type=int, default=20000, help='number of training iterations')
     parser.add_argument('-epoch', type=int, default=100, help='number of epochs')
     parser.add_argument('-lr', type=float, default=1e-4, help='learning rate')
-    # parser.add_argument('-beta1', type=float, default=0.5)
-    # parser.add_argument('-beta2', type=float, default=0.999)
     parser.add_argument('-noise_weight', type=float, default=0., help='noise weight')
     parser.add_argument('-noise_dist', type=str, default='uniform', help='noise distribution: gauss | uniform')
     parser.add_argument('-gp_weight', type=float, default=10., help='gp weight')
-    # parser.add_argument('-gp_center', type=float, default=1., help='gp center')
-    # parser.add_argument('-gp_inter', type=float, default=-1., help='gp interpolation, -1 for random')
 
     parser.add_argument('-device', type=str, default='cuda:0', help='device to run on')
 
     args = parser.parse_args()
-    # with open(args.base_config, 'r') as f:
-    #     config = yaml.load(f)
-    #     print(config)
-    # cutils.update_config(config['nnd'], args.__dict__)
-    # print(config)
-
     print(args)
 
     config_str = ''
@@ -93,10 +81,8 @@ if __name__ == '__main__':
         test_x.append(x)
 
     train_x = torch.stack(train_x, dim=0)
-    # train_y = torch.LongTensor(train_y)
     test_x = torch.stack(test_x, dim=0)
     print(train_x.size(), test_x.size())
-    # print(train_y.size())
 
     noise_weights = [0., 0.1, 0.5, 1]
 

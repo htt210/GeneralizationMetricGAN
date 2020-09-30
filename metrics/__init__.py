@@ -8,3 +8,5 @@ from .knn import batch_pairwise_distances, ManifoldEstimator, knn_precision_reca
 from .mdl import complexity_measure, max_jacobian_norm_batch, class_pair_distance
 from .nnd import nnd, nnd_iter
 from .tstr import TSTR
+from .fid import calculate_frechet_distance, calculate_activation_statistics, \
+    calculate_fid_given_paths, get_activations, _compute_statistics_of_path

@@ -41,6 +41,9 @@ from scipy import linalg
 from torch.nn.functional import adaptive_avg_pool2d
 
 from PIL import Image
+from torch.utils.data import DataLoader
+
+from metrics import Classifier
 
 try:
     from tqdm import tqdm
@@ -124,6 +127,32 @@ def get_activations(files, model, batch_size=50, dims=2048, cuda=False):
         pred_arr[start:end] = pred.cpu().data.numpy().reshape(pred.size(0), -1)
 
     return pred_arr
+
+
+def get_activation_from_tensors(image_loader: DataLoader, model: Classifier, device: str):
+    """
+    Get activation from a tensor dataset using a Classifier
+
+    :param image_loader:
+    :param model:
+    :param device:
+    :return:
+    """
+    with torch.no_grad():
+        model.to(device)
+        activations = []
+
+        for bidx, batch in enumerate(image_loader):
+            if isinstance(batch, list):
+                batch = batch[0]
+            batch = batch.to(device)
+            featurei = model.get_features(batch)
+            activations.append(featurei)
+        activations = torch.cat(activations, dim=0)
+        activations = activations.view(activations.size(0), -1)
+        print(activations.size())
+
+        return activations.data.cpu().numpy()
 
 
 def calculate_frechet_distance(mu1, sigma1, mu2, sigma2, eps=1e-6):
