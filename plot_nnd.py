@@ -53,6 +53,12 @@ if __name__ == '__main__':
             for cap in caps:
                 cap.set_markeredgewidth(1)
 
+        ax.plot([10000, 10000], [0, 8], linestyle='--', c='k', alpha=0.5)
+        ax.annotate('$|\mathcal{D}_{train}| = |\mathcal{D}_{test}| = 10000$', xy=(10000, 4),
+                    xycoords='data', xytext=(0.3, 0.4), textcoords='axes fraction',
+                    arrowprops=dict(facecolor='black', shrink=0.05, headwidth=6, width=1),
+                    horizontalalignment='left', verticalalignment='top', fontsize=16)
+
         ax.set_ylabel('NND', fontsize=16)
         ax.set_xlabel('Train set size', fontsize=16)
         ax.legend(prop={'size': 16})
