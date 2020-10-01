@@ -16,6 +16,7 @@ from time import time
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+    parser.add_argument('-test_size', type=int, default=10000, help='test dataset size')
     parser.add_argument('-n_exp', type=int, default=10, help='number of runs per config')
     parser.add_argument('-model', type=str, default='mlp', help='classifier architecture: mlp | cnn')
     parser.add_argument('-data', type=str, default='mnist', help='dataset to use: cifar10 | mnist')
@@ -87,7 +88,7 @@ if __name__ == '__main__':
     noise_weights = [0., 0.1, 0.5, 1]
 
     train_sizes = [1000, 2500, 5000, 7500, 10000, 30000, 60000]
-    test_data = TensorDataset(test_x)
+    test_data = TensorDataset(test_x[:args.test_size])
     test_data = DataLoader(dataset=test_data, batch_size=128, shuffle=True,
                            drop_last=True, num_workers=16, pin_memory=True)
 
