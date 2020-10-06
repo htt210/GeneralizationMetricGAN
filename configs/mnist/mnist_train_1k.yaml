@@ -18,8 +18,8 @@ z_dist:
   type: gauss
   dim: 128
 training:
-  out_dir: ~/github/exps/mdl/mnist
-  n_epochs: 1000
+  out_dir: ~/github/exps/mdl/mnist/1k
+  n_epochs: 501
   loss: standard
   gp_inter: random
   gp_weight: 100.
@@ -31,7 +31,7 @@ training:
   lr_anneal: 1.
   lr_anneal_every: 100000
   d_steps: 1
-  log_interval: 5
+  log_interval: 50
 fid:
   enable: true
   batch_size: 100

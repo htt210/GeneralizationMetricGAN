@@ -1,6 +1,6 @@
 data:
   name: mnist
-  train_size: 10000
+  train_size: 60000
   test_size: 10000
   root: ~/github/data/mnist
   img_size: 28
@@ -18,7 +18,7 @@ z_dist:
   type: gauss
   dim: 128
 training:
-  out_dir: ~/github/exps/mdl/mnist/10k
+  out_dir: ~/github/exps/mdl/mnist/60k
   n_epochs: 501
   loss: standard
   gp_inter: random
