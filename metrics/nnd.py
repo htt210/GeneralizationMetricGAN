@@ -258,7 +258,7 @@ def nnd_iter_gen(C, G, gan_loss, real_data, z_dist, y_dist, lr, betas,
         loss_real /= (ridx + 1)
 
         loss_fake = torch.tensor(0.)
-        for fidx in range(ridx + 1):
+        for fidx in range(2 * ridx + 1):
             z = z_dist.sample((batch_size,))
             y = y_dist.sample((batch_size,))
             fake = G(z, y)

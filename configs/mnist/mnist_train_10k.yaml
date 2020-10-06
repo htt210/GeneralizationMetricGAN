@@ -1,0 +1,66 @@
+data:
+  name: mnist
+  train_size: 10000
+  test_size: 10000
+  root: ~/github/data/mnist
+  img_size: 28
+  n_channels: 1
+  n_labels: 10
+  use_label: false
+  embed_dim: 32
+generator:
+  name: mlp
+  kwargs:
+discriminator:
+  name: mlp
+  kwargs:
+z_dist:
+  type: gauss
+  dim: 128
+training:
+  out_dir: ~/github/exps/mdl/mnist
+  n_epochs: 1000
+  loss: standard
+  gp_inter: random
+  gp_weight: 100.
+  gp_center: 0.
+  batch_size: 128
+  nworkers: 16
+  lr_g: 0.0001
+  lr_d: 0.0001
+  lr_anneal: 1.
+  lr_anneal_every: 100000
+  d_steps: 1
+  log_interval: 5
+fid:
+  enable: true
+  batch_size: 100
+  sample_size: 10000
+  model: ~/github/data/mnist/mnist_classifier.pt
+iscore:
+  enable: true
+  batch_size: 100
+  sample_size: 10000
+  model: ~/github/data/mnist/mnist_classifier.pt
+knn:
+  enable: true
+  k: 3
+  sample_size: 10000
+kmeans:
+  enable: true
+  k: 20
+  sample_size: 10000
+nnd:
+  enable: true
+  sample_size: 10000
+  batch_size: 128
+  loss: wgangp
+  lr: 0.0001
+  beta1: 0.9
+  beta2: 0.999
+  gp_weight: 10.
+  noise_weight: 0.
+  noise_dist: uniform
+  n_iters: 20000
+  model: mlp
+

@@ -6,11 +6,23 @@ import argparse
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-path', type=str, default='./results/nnd/1601304007.573754/',
+    parser.add_argument('-path', type=str, default='./results/nnd/1601543191.037677/',
                         help='path to the nnd result folder')
     args = parser.parse_args()
 
-    with open(args.path + 'nnd_score.txt', 'r') as f, open(args.path + 'nnd_mean_std.txt', 'w') as mvf:
+    with open(args.path + 'nnd_score.txt', 'r') as f, \
+            open(args.path + 'nnd_mean_std.txt', 'w') as mvf, open(args.path + 'nnd_configs.txt') as configf:
+
+        config_line = configf.readlines()
+        test_size_start = config_line[0].find('test_size=')
+        if test_size_start < 0:
+            test_size = 10000
+        else:
+            test_size_start += len('test_size=')
+            test_size = int(config_line[0][test_size_start:test_size_start+4])
+            # print(test_size)
+        print('test_size ', test_size)
+
         lines = f.readlines()
         train_sizes = lines[0][len('train_sizes:'):].strip()[1:-1].strip().split(', ')
         train_sizes = [int(ts) for ts in train_sizes]
@@ -57,14 +69,14 @@ if __name__ == '__main__':
             mvf.write('mean_line: ' + str(nndi_mean) + '\n')
             mvf.write('std_line: ' + str(nndi_std) + '\n')
 
-        ax.plot([10000, 10000], [0, 8], linestyle='--', c='k', alpha=0.5)
-        ax.annotate('$|\mathcal{D}_{train}| = |\mathcal{D}_{test}| = 10000$', xy=(10000, 4),
-                    xycoords='data', xytext=(0.3, 0.4), textcoords='axes fraction',
+        ax.plot([test_size, test_size], [0, 8], linestyle='--', c='k', alpha=0.5)
+        ax.annotate('$|\mathcal{D}_{train}| = |\mathcal{D}_{test}| = %d$' % test_size, xy=(test_size, 6),
+                    xycoords='data', xytext=(0.3, 0.5), textcoords='axes fraction',
                     arrowprops=dict(facecolor='black', shrink=0.05, headwidth=6, width=1),
                     horizontalalignment='left', verticalalignment='top', fontsize=16)
 
         ax.set_ylabel('NND', fontsize=16)
         ax.set_xlabel('Train set size', fontsize=16)
         ax.legend(prop={'size': 16})
-        fig.savefig('results/nnd/nnd_noise.pdf', bbox_inches='tight')
+        fig.savefig('results/nnd/nnd_noise_test_size_%d.pdf' % test_size, bbox_inches='tight')
         plt.show()
