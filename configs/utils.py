@@ -1,6 +1,12 @@
 import yaml
 
 
+def load_configs(path):
+    with open(path, 'r') as f:
+        config = yaml.load(f, Loader=yaml.CLoader)
+    return config
+
+
 def update_config_kv(config, *params):
     """
     update a config recursively: config[key1][key2][...] = value

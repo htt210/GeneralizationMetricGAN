@@ -5,6 +5,7 @@ import torch.autograd as ag
 
 INFINITY = 1e10
 
+
 # ----------------------------------------------------------------------------------------------------------------------
 def slerp(start, end, n_steps):
     """
@@ -68,11 +69,12 @@ def data_path_length(z_start, z_end, interpolation_method, n_steps, p,
     return dists, start_labels, end_labels
 
 
-def extract_features(images, C, layer, batch_size, device):
-    C = C.to(device)
-    with torch.no_grad():
-        for bidx, batch in enumerate(images):
-            features = C.get_features(batch, layer_name=layer)
+# def extract_features(images, C, layer, batch_size, device):
+#     C = C.to(device)
+#     with torch.no_grad():
+#         for bidx, batch in enumerate(images):
+#             features = C.get_features(batch, layer_name=layer)
+#
 
 # ----------------------------------------------------------------------------------------------------------------------
 

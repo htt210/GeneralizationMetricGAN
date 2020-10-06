@@ -23,7 +23,7 @@ class MLPDiscriminator(Discriminator):
 
     def forward(self, x, y=None):
         x = x.view(x.size(0), -1)  # flatten the image if needed
-        if y is not None:
+        if y is not None and self.use_label:
             embedding = self.embed(y)
             x = torch.cat([x, embedding], dim=1)
 
@@ -53,7 +53,7 @@ class MLPGenerator(Generator):
         self.net.apply(weights_init)
 
     def forward(self, z, y=None):
-        if y is not None:
+        if y is not None and self.use_label:
             embedding = self.embed(y)
             z = torch.cat([z, embedding], dim=1)
 

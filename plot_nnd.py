@@ -10,7 +10,7 @@ if __name__ == '__main__':
                         help='path to the nnd result folder')
     args = parser.parse_args()
 
-    with open(args.path + 'nnd_score.txt', 'r') as f:
+    with open(args.path + 'nnd_score.txt', 'r') as f, open(args.path + 'nnd_mean_std.txt', 'w') as mvf:
         lines = f.readlines()
         train_sizes = lines[0][len('train_sizes:'):].strip()[1:-1].strip().split(', ')
         train_sizes = [int(ts) for ts in train_sizes]
@@ -52,6 +52,10 @@ if __name__ == '__main__':
                                        capsize=4, linestyle=line_styles[nidx])
             for cap in caps:
                 cap.set_markeredgewidth(1)
+
+            mvf.write('noise_weight: ' + str(nw) + '\n')
+            mvf.write('mean_line: ' + str(nndi_mean) + '\n')
+            mvf.write('std_line: ' + str(nndi_std) + '\n')
 
         ax.plot([10000, 10000], [0, 8], linestyle='--', c='k', alpha=0.5)
         ax.annotate('$|\mathcal{D}_{train}| = |\mathcal{D}_{test}| = 10000$', xy=(10000, 4),

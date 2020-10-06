@@ -30,15 +30,15 @@ class DCDiscriminator(Discriminator):
         )
         self.apply(weights_init_conv)
 
-    def forward(self, *inputs):
+    def forward(self, x, y=None):
         # print(inputs.size())
-        if len(inputs) > 1:
-            labels = inputs[1]
-            inputs = inputs[0]
-        else:
-            inputs = inputs[0]
-        inputs = inputs.view(inputs.size(0), self.nc, self.img_size, self.img_size)
-        return self.net(inputs)
+        # if len(inputs) > 1:
+        #     labels = inputs[1]
+        #     inputs = inputs[0]
+        # else:
+        #     inputs = inputs[0]
+        x = x.view(x.size(0), self.nc, self.img_size, self.img_size)
+        return self.net(x)
 
 
 class DCGenerator(Generator):
@@ -73,6 +73,6 @@ class DCGenerator(Generator):
         )
         self.apply(weights_init_conv)
 
-    def forward(self, z):
+    def forward(self, z, y=None):
         z = z.view(z.size(0), self.nz, 1, 1)
         return self.net(z)

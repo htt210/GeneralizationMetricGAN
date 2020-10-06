@@ -1,6 +1,6 @@
 data:
   name: mnist
-  train_size: 60000
+  train_size: 30000
   test_size: 10000
   root: ~/github/data/mnist
   img_size: 28
@@ -52,7 +52,7 @@ kmeans:
   sample_size: 10000
 nnd:
   enable: true
-  sample_size: 20000
+  sample_size: 10000
   batch_size: 128
   loss: wgangp
   lr: 0.0001
