@@ -4,6 +4,7 @@ from torch.utils.tensorboard import SummaryWriter
 import torch.optim as optim
 from tqdm import tqdm, trange
 from .utils import *
+import os
 
 
 
@@ -96,7 +97,7 @@ def nnd_iter(C, gan_loss, real_data, fake_data, lr, betas,
     if gan_loss != 'wgan':
         raise NotImplementedError('Only wgan-1gp loss is supported. Expected `wgan`, found `' + gan_loss + '`')
 
-    # writer = SummaryWriter(log_dir='~/github/runs/')
+    # writer = SummaryWriter(log_dir=os.path.expanduser('~/github/runs/'))
 
     for p in C.parameters():
         p.requires_grad_()
@@ -148,10 +149,9 @@ def nnd_iter(C, gan_loss, real_data, fake_data, lr, betas,
         loss_reg.backward()
         optimizer.step()
 
-        # writer.add_scalar('loss_fake', loss_fake, iidx)
-        # writer.add_scalar('loss_real', loss_real, iidx)
-        # writer.add_scalar('loss_reg', loss_reg, iidx)
-        # print(loss_real.item(), loss_fake.item(), grad_pen.item(), loss_reg.item())
+        # writer.add_scalar('nnd_iter/loss_fake', loss_fake, iidx)
+        # writer.add_scalar('nnd_iter/loss_real', loss_real, iidx)
+        # writer.add_scalar('nnd_iter/loss_reg', loss_reg, iidx)
 
     with torch.no_grad():
         loss_real = torch.tensor(0.)
@@ -197,6 +197,8 @@ def nnd_iter_gen(C, G, gan_loss, real_data, z_dist, y_dist, lr, betas,
     """
     if gan_loss != 'wgan':
         raise NotImplementedError('Only wgan-1gp loss is supported. Expected `wgan`, found `' + gan_loss + '`')
+
+    # writer = SummaryWriter(log_dir=os.path.expanduser('~/github/runs/'))
 
     for p in C.parameters():
         p.requires_grad_()
@@ -247,6 +249,10 @@ def nnd_iter_gen(C, G, gan_loss, real_data, z_dist, y_dist, lr, betas,
         loss_reg.backward()
         optimizer.step()
 
+        # writer.add_scalar('nnd_iter_gen/loss_fake', loss_fake, iidx)
+        # writer.add_scalar('nnd_iter_gen/loss_real', loss_real, iidx)
+        # writer.add_scalar('nnd_iter_gen/loss_reg', loss_reg, iidx)
+
     with torch.no_grad():
         loss_real = torch.tensor(0.)
         for ridx, real in enumerate(real_data):
@@ -258,9 +264,9 @@ def nnd_iter_gen(C, G, gan_loss, real_data, z_dist, y_dist, lr, betas,
         loss_real /= (ridx + 1)
 
         loss_fake = torch.tensor(0.)
-        for fidx in range(2 * ridx + 1):
+        for fidx in range(10 * ridx + 1):
             z = z_dist.sample((batch_size,))
-            y = y_dist.sample((batch_size,))
+            # y = y_dist.sample((batch_size,))
             fake = G(z, y)
             pred_fake = C(fake)
             loss_fake += compute_loss(gan_loss, pred_fake, 0)

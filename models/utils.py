@@ -44,6 +44,17 @@ def get_g(args):
         pass
 
 
+def get_c(args):
+    img_size = args['data']['img_size']
+    n_channels = args['data']['n_channels']
+    if args['nnd']['model'] == 'mlp':
+        net = models.MLPDiscriminator(nx=img_size * img_size, n_hidden=512,
+                                      n_hiddenlayer=3, use_label=False)
+    else:
+        net = models.DCDiscriminator(img_size=img_size, nc=n_channels, ndf=128)
+    return net
+
+
 def get_optims(param_g, param_d, args):
     lr_g = args['training']['lr_g']
     lr_d = args['training']['lr_d']

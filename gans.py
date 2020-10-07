@@ -30,6 +30,9 @@ class GAN(object):
         self.args = args
         self.device = device
         self.log_dir = os.path.expanduser(self.args['training']['out_dir'] + '/' + str(time()) + '/')
+        os.makedirs(self.log_dir, exist_ok=True)
+        with open(self.log_dir + 'config.txt', 'w') as cf:
+            cf.write(str(self.args))
 
     def _train_d(self, real_batch, noise_batch):
         self.optim_d.zero_grad()
@@ -135,12 +138,6 @@ class GAN(object):
                                          nrow=32, normalize=inter_fake.size(1) > 1)
         if self.args['nnd']['enable']:
             print('computing nnd')
-            # build nets
-            if self.args['nnd']['model'] == 'mlp':
-                net = models.MLPDiscriminator(nx=img_size * img_size, n_hidden=512,
-                                              n_hiddenlayer=3, use_label=False)
-            else:
-                net = models.DCDiscriminator(img_size=img_size, nc=n_channels, ndf=128)
 
             # generate data
             sample_size = self.args['nnd']['sample_size']
@@ -158,12 +155,17 @@ class GAN(object):
             fake_data = udata.DataLoader(fake_data, batch_size=batch_size, shuffle=True, drop_last=True)
 
             # compute 2 nnd scores
+            # build nets
+            net = models.get_c(self.args)
             nnd_fixed = metrics.nnd_iter(C=net, gan_loss='wgan', real_data=test_data,
                                          fake_data=fake_data, lr=self.args['nnd']['lr'], betas=(0.9, 0.999),
                                          noise_weight=self.args['nnd']['noise_weight'],
                                          noise_dist=self.args['nnd']['noise_dist'],
                                          gp_weight=self.args['nnd']['gp_weight'],
                                          n_iter=self.args['nnd']['n_iters'], device=self.device)
+
+            # build nets
+            net = models.get_c(self.args)
             nnd_inf = metrics.nnd_iter_gen(C=net, G=self.G, gan_loss='wgan', real_data=test_data,
                                            z_dist=self.z_dist, y_dist=self.y_dist, lr=self.args['nnd']['lr'],
                                            betas=(0.9, 0.999), noise_weight=self.args['nnd']['noise_weight'],
@@ -176,3 +178,4 @@ class GAN(object):
             self.writer.add_scalar('nnd_inf_%05d' % eidx, nnd_inf, global_step=eidx)
             with open(self.log_dir + 'nnd.txt', 'a+') as nnd_file:
                 nnd_file.write('%d %f %f\n' % (eidx, nnd_fixed, nnd_inf))
+        # end if
