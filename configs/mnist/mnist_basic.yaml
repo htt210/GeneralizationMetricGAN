@@ -19,7 +19,7 @@ z_dist:
   dim: 128
 training:
   out_dir: ~/github/exps/mdl/mnist
-  n_epochs: 1000
+  n_epochs: 1001
   loss: wgan
   gp_inter: random
   gp_weight: 10.

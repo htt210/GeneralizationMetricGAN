@@ -6,7 +6,7 @@ import argparse
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-path', type=str, default='./results/nnd/1601543191.037677/',
+    parser.add_argument('-path', type=str, default='./results/nnd/1601543122.030721/',
                         help='path to the nnd result folder')
     args = parser.parse_args()
 
@@ -69,9 +69,9 @@ if __name__ == '__main__':
             mvf.write('mean_line: ' + str(nndi_mean) + '\n')
             mvf.write('std_line: ' + str(nndi_std) + '\n')
 
-        ax.plot([test_size, test_size], [0, 8], linestyle='--', c='k', alpha=0.5)
-        ax.annotate('$|\mathcal{D}_{train}| = |\mathcal{D}_{test}| = %d$' % test_size, xy=(test_size, 6),
-                    xycoords='data', xytext=(0.3, 0.5), textcoords='axes fraction',
+        ax.plot([test_size, test_size], [0, 12], linestyle='--', c='k', alpha=0.5)
+        ax.annotate('$|\mathcal{D}_{train}| = |\mathcal{D}_{test}| = %d$' % test_size, xy=(test_size, 10),
+                    xycoords='data', xytext=(0.3, 0.55), textcoords='axes fraction',
                     arrowprops=dict(facecolor='black', shrink=0.05, headwidth=6, width=1),
                     horizontalalignment='left', verticalalignment='top', fontsize=16)
 
