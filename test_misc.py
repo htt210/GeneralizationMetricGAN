@@ -33,8 +33,10 @@ noise_weights = [0, 0.1, 0.5, 1., 2, 5]
 
 for i, (x, y) in enumerate(mnist):
     for nw in noise_weights:
-        noise = torch.rand_like(x) * 2 - 1
-        torchvision.utils.save_image(x + nw * noise, 'results/noisy_%.1f.png' % nw)
+        noise = (torch.rand_like(x) * 2 - 1) * nw
+        xnoise = x + noise
+        torchvision.utils.save_image(noise, 'results/noise_%.1f.png' % nw, normalize=True, range=(-1, 1))
+        torchvision.utils.save_image(xnoise, 'results/noisy_%.1f.png' % nw, normalize=True)  # , range=(-1.5, 1.5))
     # end for
     break
 # end for

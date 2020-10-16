@@ -2,12 +2,11 @@ import torch
 import numpy as np
 from matplotlib import pyplot as plt
 import argparse
-import re
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-path', type=str, default='./results/nnd/1601543191.037677/',
+    parser.add_argument('-path', type=str, default='./results/nnd_pre_generated_noise/1602421529.7586193/',
                         help='path to the nnd result folder')
     args = parser.parse_args()
 
@@ -20,8 +19,7 @@ if __name__ == '__main__':
             test_size = 10000
         else:
             test_size_start += len('test_size=')
-
-            test_size = int(re.findall(r'[0-9]+', config_line[0][test_size_start:])[0])
+            test_size = int(config_line[0][test_size_start:test_size_start+5])
             # print(test_size)
         print('test_size ', test_size)
 
@@ -57,12 +55,10 @@ if __name__ == '__main__':
         fig, ax = plt.subplots(1, 1)  # , figsize=(5, 5))
 
         line_styles = [':', '-.', '--', '-']
-        max_nnd = 0
         for nidx, nw in enumerate(noise_weights):
             nndi = nnds[nidx]
             nndi_mean = nndi.mean(dim=1)
             nndi_std = nndi.std(dim=1)
-            max_nnd = max(nndi.max().item(), max_nnd)
             (_, caps, _) = ax.errorbar(x=train_sizes, y=nndi_mean, yerr=nndi_std,
                                        marker='.', label='$\epsilon = $' + str(nw),
                                        capsize=4, linestyle=line_styles[nidx])
@@ -75,8 +71,9 @@ if __name__ == '__main__':
 
         ax.set_xticks([0, 5000, 10000, 30000, 60000])
         ax.set_xticklabels(['0', '5', '10', '30', '60'])
-        ax.plot([test_size, test_size], [0, max_nnd], linestyle='--', c='k', alpha=0.5)
-        ax.annotate('$|\mathcal{D}_{train}| = |\mathcal{D}_{test}| = %d$' % test_size, xy=(test_size, max_nnd - 1),
+
+        ax.plot([test_size, test_size], [0, 8], linestyle='--', c='k', alpha=0.5)
+        ax.annotate('$|\mathcal{D}_{train}| = |\mathcal{D}_{test}| = %d$' % test_size, xy=(test_size, 7),
                     xycoords='data', xytext=(0.3, 0.55), textcoords='axes fraction',
                     arrowprops=dict(facecolor='black', shrink=0.05, headwidth=6, width=1),
                     horizontalalignment='left', verticalalignment='top', fontsize=16)
@@ -84,5 +81,5 @@ if __name__ == '__main__':
         ax.set_ylabel('NND', fontsize=16)
         ax.set_xlabel('Train set size (x1000)', fontsize=16)
         ax.legend(prop={'size': 16})
-        fig.savefig('results/nnd/nnd_noise_test_size_%d.pdf' % test_size, bbox_inches='tight')
+        fig.savefig('results/nnd_pre_generated_noise/nnd_pre_generated_noise_test_size_%d.pdf' % test_size, bbox_inches='tight')
         plt.show()

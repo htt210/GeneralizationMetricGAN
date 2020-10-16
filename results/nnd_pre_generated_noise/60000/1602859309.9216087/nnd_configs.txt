@@ -1,0 +1,1 @@
+Namespace(data='mnist', device='cuda:0', epoch=100, fake_size=60000, gp_weight=10.0, lr=0.0001, model='mlp', n_exp=10, n_iter=20000, noise_dist='uniform', test_size=10000)
