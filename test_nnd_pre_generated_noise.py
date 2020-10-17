@@ -84,15 +84,15 @@ if __name__ == '__main__':
         test_x.append(x)
 
     train_x = torch.stack(train_x, dim=0)
-    test_x = torch.stack(test_x, dim=0)
+    test_x = torch.stack(test_x, dim=0).to(device)
     print(train_x.size(), test_x.size())
 
     noise_weights = [0., 0.1, 0.5, 1]
 
     train_sizes = [1000, 2500, 5000, 7500, 10000, 30000, 60000]
-    test_data = TensorDataset(test_x[:args.test_size].to(device))
+    test_data = TensorDataset(test_x[:args.test_size])
     test_data = DataLoader(dataset=test_data, batch_size=128, shuffle=True,
-                           drop_last=True, num_workers=16, pin_memory=False)
+                           drop_last=True, num_workers=0, pin_memory=False)
 
     nnds = [[[] for j in range(len(train_sizes))] for i in range(len(noise_weights))]
 
