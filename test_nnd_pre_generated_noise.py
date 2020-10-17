@@ -118,13 +118,13 @@ if __name__ == '__main__':
                         net = models.DCDiscriminator(img_size=size, nc=nc, ndf=128)
 
                     x = train_x[:train_size]
-                    if train_size < fake_size:
+                    if train_size <= fake_size:
                         xs = []
                         for repeat in range(fake_size // train_size + 1):
                             noise = torch.rand_like(x) * 2 - 1 if args.noise_dist == 'uniform' else torch.randn_like(x)
                             noise *= noise_weight
                             xs.append(x + noise)
-                        x = torch.cat(xs, dim=0)[:args.test_size]
+                        x = torch.cat(xs, dim=0)[:fake_size]
                         print('done add noise')
                     train_data = TensorDataset(x)
                     train_data = DataLoader(dataset=train_data, batch_size=128, shuffle=True,

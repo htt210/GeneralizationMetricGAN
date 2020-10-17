@@ -7,7 +7,7 @@ import re
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-path', type=str, default='./results/nnd/1601543191.037677/',
+    parser.add_argument('-path', type=str, default='./results/nnd/1601543121.0444973/',
                         help='path to the nnd result folder')
     args = parser.parse_args()
 
@@ -76,13 +76,13 @@ if __name__ == '__main__':
         ax.set_xticks([0, 5000, 10000, 30000, 60000])
         ax.set_xticklabels(['0', '5', '10', '30', '60'])
         ax.plot([test_size, test_size], [0, max_nnd], linestyle='--', c='k', alpha=0.5)
-        ax.annotate('$|\mathcal{D}_{train}| = |\mathcal{D}_{test}| = %d$' % test_size, xy=(test_size, max_nnd - 1),
+        ax.annotate('$|\mathcal{D}| = |\mathcal{D}_{test}| = %d$' % test_size, xy=(test_size, max_nnd - 1),
                     xycoords='data', xytext=(0.3, 0.55), textcoords='axes fraction',
                     arrowprops=dict(facecolor='black', shrink=0.05, headwidth=6, width=1),
                     horizontalalignment='left', verticalalignment='top', fontsize=16)
 
         ax.set_ylabel('NND', fontsize=16)
-        ax.set_xlabel('Train set size (x1000)', fontsize=16)
+        ax.set_xlabel('Size of $\mathcal{D}\ (x1000)$', fontsize=16)
         ax.legend(prop={'size': 16})
         fig.savefig('results/nnd/nnd_noise_test_size_%d.pdf' % test_size, bbox_inches='tight')
         plt.show()

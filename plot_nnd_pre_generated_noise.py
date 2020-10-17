@@ -2,11 +2,12 @@ import torch
 import numpy as np
 from matplotlib import pyplot as plt
 import argparse
+import re
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-path', type=str, default='./results/nnd_pre_generated_noise/1602421529.7586193/',
+    parser.add_argument('-path', type=str, default='./results/nnd_pre_generated_noise/60000/1602859309.9216087/',
                         help='path to the nnd result folder')
     args = parser.parse_args()
 
@@ -19,9 +20,16 @@ if __name__ == '__main__':
             test_size = 10000
         else:
             test_size_start += len('test_size=')
-            test_size = int(config_line[0][test_size_start:test_size_start+5])
+            test_size = int(re.findall(r'[0-9]+', config_line[0][test_size_start:])[0])
             # print(test_size)
         print('test_size ', test_size)
+        fake_size_start = config_line[0].find('fake_size=')
+        if fake_size_start < 0:
+            fake_size = 10000
+        else:
+            fake_size = int(re.findall(r'[0-9]+', config_line[0][fake_size_start:])[0])
+        print('fake_size', fake_size)
+
 
         lines = f.readlines()
         train_sizes = lines[0][len('train_sizes:'):].strip()[1:-1].strip().split(', ')
@@ -29,13 +37,17 @@ if __name__ == '__main__':
         print(train_sizes)
 
         noise_weights = lines[1][len('noise_weights:'):].strip()[1:-1].strip().split(', ')
-        noise_weights = [float(nw) for nw in noise_weights]
-        print(noise_weights)
+        noise_weights = [float(nw) for nw in noise_weights][:-2]
+        print('noise_weights', noise_weights)
 
         nnds = [[[] for j in range(len(train_sizes))] for i in range(len(noise_weights))]
 
         nidx, sidx = 0, 0
         for i, line in enumerate(lines):
+            # print(line)
+            print(nidx, sidx)
+            if nidx >= len(noise_weights):
+                break
             if line.startswith('noise_weight '):
                 scores = [float(score) for score in lines[i + 1].split()]
                 nnds[nidx][sidx].append(scores)
@@ -72,14 +84,14 @@ if __name__ == '__main__':
         ax.set_xticks([0, 5000, 10000, 30000, 60000])
         ax.set_xticklabels(['0', '5', '10', '30', '60'])
 
-        ax.plot([test_size, test_size], [0, 8], linestyle='--', c='k', alpha=0.5)
-        ax.annotate('$|\mathcal{D}_{train}| = |\mathcal{D}_{test}| = %d$' % test_size, xy=(test_size, 7),
-                    xycoords='data', xytext=(0.3, 0.55), textcoords='axes fraction',
-                    arrowprops=dict(facecolor='black', shrink=0.05, headwidth=6, width=1),
-                    horizontalalignment='left', verticalalignment='top', fontsize=16)
+        # ax.plot([test_size, test_size], [0, 8], linestyle='--', c='k', alpha=0.5)
+        # ax.annotate('$|\mathcal{D}| = |\mathcal{D}_{test}| = %d$' % test_size, xy=(test_size, 7),
+        #             xycoords='data', xytext=(0.3, 0.55), textcoords='axes fraction',
+        #             arrowprops=dict(facecolor='black', shrink=0.05, headwidth=6, width=1),
+        #             horizontalalignment='left', verticalalignment='top', fontsize=16)
 
         ax.set_ylabel('NND', fontsize=16)
-        ax.set_xlabel('Train set size (x1000)', fontsize=16)
+        ax.set_xlabel('Size of $\mathcal{D}$ (x1000)', fontsize=16)
         ax.legend(prop={'size': 16})
-        fig.savefig('results/nnd_pre_generated_noise/nnd_pre_generated_noise_test_size_%d.pdf' % test_size, bbox_inches='tight')
+        fig.savefig('results/nnd_pre_generated_noise/nnd_pre_generated_noise_test_size_%d_fake_size_%d.pdf' % (test_size, fake_size), bbox_inches='tight')
         plt.show()
