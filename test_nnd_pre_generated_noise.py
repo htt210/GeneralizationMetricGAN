@@ -90,9 +90,9 @@ if __name__ == '__main__':
     noise_weights = [0., 0.1, 0.5, 1]
 
     train_sizes = [1000, 2500, 5000, 7500, 10000, 30000, 60000]
-    test_data = TensorDataset(test_x[:args.test_size])
+    test_data = TensorDataset(test_x[:args.test_size].to(device))
     test_data = DataLoader(dataset=test_data, batch_size=128, shuffle=True,
-                           drop_last=True, num_workers=16, pin_memory=True)
+                           drop_last=True, num_workers=16, pin_memory=False)
 
     nnds = [[[] for j in range(len(train_sizes))] for i in range(len(noise_weights))]
 
