@@ -124,11 +124,11 @@ if __name__ == '__main__':
                             noise = torch.rand_like(x) * 2 - 1 if args.noise_dist == 'uniform' else torch.randn_like(x)
                             noise *= noise_weight
                             xs.append(x + noise)
-                        x = torch.cat(xs, dim=0)[:fake_size]
+                        x = torch.cat(xs, dim=0)[:fake_size].to(device)
                         print('done add noise')
                     train_data = TensorDataset(x)
                     train_data = DataLoader(dataset=train_data, batch_size=128, shuffle=True,
-                                            drop_last=True, num_workers=0, pin_memory=True)
+                                            drop_last=True, num_workers=0, pin_memory=False)
 
                     # run without noise because the noise was already added
                     nndij = nnd_iter(C=net, gan_loss='wgan', real_data=test_data,
